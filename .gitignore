@@ -1,0 +1,50 @@
+# Build output
+bin/
+obj/
+publish/
+*.zip
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# AWS Lambda tooling
+aws-lambda-tools-defaults.json
+
+# Secrets
+secrets.json
+*.secrets.json
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+
+# Test results
+TestResult*/  
+*.ncrunch*  
+*.vstest*
+
+# dotnet watch / hot reload
+.dotnet-watch.json
+
+# Local .terraform directories
+.terraform/
+
+# GitHub Actions artifacts
+*.coverage
+coverage/
+/.vs/
+.VS
