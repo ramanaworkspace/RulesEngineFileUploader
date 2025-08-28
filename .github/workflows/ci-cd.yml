@@ -5,42 +5,32 @@ on:
     branches: [ main ]
 
 env:
-  IMAGE_NAME: rulesengine-service
+  AZURE_WEBAPP_NAME: RulesEngineFileUploader
+  AZURE_WEBAPP_PACKAGE_PATH: "./publish"
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.x'
 
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Restore
+        run: dotnet restore ./RulesEngineSolution.sln
 
-      - name: Azure Container Registry login
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f docker/Dockerfile .
-
-      - name: Push image to ACR
-        run: |
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Deploy to Azure Web App for Containers
+      - name: Publish
+        run: dotnet publish ./RulesEngineSolution.sln --configuration Release --no-build --output '${{env.AZURE_WEBAPP_PACKAGE_PATH}}'
+      
+      - name: Deployment
         uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: |
-            ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        with: 
+          app-name: ${{env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{secrets.AZURE_PUBLISH_PROFILE}}
+          package: ${{env.AZURE_WEBAPP_PACKAGE_PATH}}
+
+        
+      
