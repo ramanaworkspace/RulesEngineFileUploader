@@ -23,8 +23,11 @@ jobs:
       - name: Restore
         run: dotnet restore ./RulesEngineSolution.sln
 
+      - name: Build
+        run: dotnet build ./RulesEngineSolution.sln --configuration Release --no-restore
+
       - name: Publish
-        run: dotnet publish ./RulesEngineSolution.sln --configuration Release --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        run: dotnet publish ./Api/Api.csproj --configuration Release --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v2
